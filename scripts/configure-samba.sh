@@ -30,7 +30,7 @@ if ! grep -q "^\[$SHARE_NAME\]" /etc/samba/smb.conf; then
    path = $PROJECT_PATH
    browsable = yes
    read only = no
-   guest ok = yes
+   guest ok = no
    force user = $USERNAME
 EOF
 fi
@@ -39,7 +39,12 @@ fi
 echo "[+] Redémarrage du service Samba"
 sudo systemctl restart smbd
 
-# --- 6. Résumé
+# --- 6. Créer un utilisateur Samba pour Windows
+echo "[+] Création de l'utilisateur Samba 'etudiant'"
+echo -e "netlab123\nnetlab123" | sudo smbpasswd -a etudiant
+
+
+# --- 7. Résumé
 echo "[✔] Partage configuré : \\$(hostname -I | awk '{print $1}')\\$SHARE_NAME"
 echo "[ℹ] Pour accéder au projet sous Windows, monte le lecteur :"
 echo "    \\\\$(hostname -I | awk '{print $1}')\\$SHARE_NAME"
