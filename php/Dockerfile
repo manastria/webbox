@@ -6,3 +6,4 @@ RUN apt-get update && apt-get install -y \
 RUN a2enmod rewrite
 
 COPY xdebug.ini /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
+COPY 99-dev.ini /usr/local/etc/php/conf.d/99-dev.ini

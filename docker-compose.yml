@@ -6,6 +6,7 @@ services:
     volumes:
       - ./public:/var/www/html
       - ./php/xdebug.ini:/usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
+      - ./php/99-dev.ini:/usr/local/etc/php/conf.d/99-dev.ini
     environment:
       XDEBUG_CONFIG: "client_host=${XDEBUG_CLIENT_HOST} client_port=9003"
 
