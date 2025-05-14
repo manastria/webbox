@@ -26,13 +26,24 @@ sudo apt update
 sudo apt install --no-install-recommends -y \
     lxde-core \
     lightdm \
+    lightdm-gtk-greeter lightdm-gtk-greeter-settings \
+    xserver-xorg xserver-xorg-video-all xserver-xorg-input-all \
+    console-setup keyboard-configuration \
     firefox-esr \
     pcmanfm \
     mousepad \
     gvfs-backends \
     samba-client
 
-# --- 3. Créer le raccourci "Mon site" sur le bureau
+# --- 3. Configurer le clavier en AZERTY (FR)
+echo "[+] Configuration du clavier en français (AZERTY)"
+sudo sed -i 's/^XKBLAYOUT=.*/XKBLAYOUT="fr"/' /etc/default/keyboard
+sudo sed -i 's/^XKBMODEL=.*/XKBMODEL="pc105"/' /etc/default/keyboard
+sudo sed -i '/^XKBVARIANT=/c\XKBVARIANT=""' /etc/default/keyboard
+sudo sed -i '/^XKBOPTIONS=/c\XKBOPTIONS=""' /etc/default/keyboard
+sudo systemctl restart keyboard-setup.service
+
+# --- 4. Créer le raccourci "Mon site" sur le bureau
 echo "[+] Création du raccourci Mon site"
 sudo -u "$USERNAME" mkdir -p "$USER_HOME/Bureau"
 
@@ -50,13 +61,13 @@ EOF
 sudo chmod +x "$USER_HOME/Bureau/Mon_site.desktop"
 sudo chown "$USERNAME:$USERNAME" "$USER_HOME/Bureau/Mon_site.desktop"
 
-# --- 4. Ajouter un favori Samba dans l'explorateur PCManFM
+# --- 5. Ajouter un favori Samba dans l'explorateur PCManFM
 echo "[+] Ajout du favori réseau Samba"
 sudo -u "$USERNAME" mkdir -p "$USER_HOME/.config/gtk-3.0"
 echo "smb://$IP_SITE/$SHARE_NAME Partage Web" | sudo tee "$USER_HOME/.config/gtk-3.0/bookmarks" > /dev/null
 sudo chown -R "$USERNAME:$USERNAME" "$USER_HOME/.config"
 
-# --- 5. Démarrage automatique de Firefox (optionnel)
+# --- 6. Démarrage automatique de Firefox (optionnel)
 echo "[+] Ajout de Firefox à l'autostart de LXDE"
 AUTOSTART_DIR="$USER_HOME/.config/lxsession/LXDE"
 sudo -u "$USERNAME" mkdir -p "$AUTOSTART_DIR"
