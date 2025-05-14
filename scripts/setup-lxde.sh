@@ -11,14 +11,17 @@ SHARE_NAME="www"
 # sudo apt update && sudo apt upgrade -y
 
 # --- 1. Créer l'utilisateur s'il n'existe pas
+# --- 1. Créer l'utilisateur s'il n'existe pas
 if ! id "$USERNAME" &>/dev/null; then
     echo "[+] Création de l'utilisateur $USERNAME"
-    sudo adduser --disabled-password --gecos "" "$USERNAME"
+    sudo adduser --gecos "" --disabled-password "$USERNAME"
+    echo "$USERNAME:netlab123" | sudo chpasswd
     sudo usermod -aG sudo,docker "$USERNAME"
 else
     echo "[*] L'utilisateur $USERNAME existe déjà"
     sudo usermod -aG sudo,docker "$USERNAME"
 fi
+
 
 # --- 2. Installer l'environnement graphique LXDE minimal
 echo "[+] Installation de LXDE et des utilitaires"
@@ -67,11 +70,15 @@ sudo -u "$USERNAME" mkdir -p "$USER_HOME/.config/gtk-3.0"
 echo "smb://$IP_SITE/$SHARE_NAME Partage Web" | sudo tee "$USER_HOME/.config/gtk-3.0/bookmarks" > /dev/null
 sudo chown -R "$USERNAME:$USERNAME" "$USER_HOME/.config"
 
-# --- 6. Démarrage automatique de Firefox (optionnel)
-echo "[+] Ajout de Firefox à l'autostart de LXDE"
+# --- 6. Démarrage automatique de Firefox + setxkbmap fr
+echo "[+] Ajout de Firefox et setxkbmap à l'autostart de LXDE"
 AUTOSTART_DIR="$USER_HOME/.config/lxsession/LXDE"
 sudo -u "$USERNAME" mkdir -p "$AUTOSTART_DIR"
-echo "@firefox-esr http://$IP_SITE" | sudo tee "$AUTOSTART_DIR/autostart" > /dev/null
+cat <<EOF | sudo tee "$AUTOSTART_DIR/autostart" > /dev/null
+@setxkbmap fr
+@firefox-esr http://$IP_SITE
+EOF
+
 sudo chown -R "$USERNAME:$USERNAME" "$USER_HOME/.config"
 
 echo "[✔] Installation et configuration terminées pour l'utilisateur $USERNAME"
