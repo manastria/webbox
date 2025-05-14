@@ -28,7 +28,7 @@ sudo apt install --no-install-recommends -y \
     lightdm \
     firefox-esr \
     pcmanfm \
-    leafpad \
+    mousepad \
     gvfs-backends \
     samba-client
 
