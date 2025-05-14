@@ -2,7 +2,7 @@ services:
   web:
     build: ./php
     ports:
-      - "8080:80"
+      - "80:80"
     volumes:
       - ./public:/var/www/html
       - ./php/xdebug.ini:/usr/local/etc/php/conf.d/xdebug.ini
