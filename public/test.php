@@ -3,7 +3,7 @@
 
 function calcul($a, $b) {
     $resultat = $a + $b;
-    return $resultat;
+    return $resultatt;
 }
 
 $x = 10;
