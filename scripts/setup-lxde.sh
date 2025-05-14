@@ -8,6 +8,8 @@ USER_HOME="/home/$USERNAME"
 IP_SITE="192.168.56.101"
 SHARE_NAME="www"
 
+# sudo apt update && sudo apt upgrade -y
+
 # --- 1. Créer l'utilisateur s'il n'existe pas
 if ! id "$USERNAME" &>/dev/null; then
     echo "[+] Création de l'utilisateur $USERNAME"
