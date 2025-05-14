@@ -16,3 +16,18 @@ services:
     volumes:
       - .:/app
     command: tail -f /dev/null
+
+  technitium-dns:
+    image: technitium/dns-server
+    container_name: dns
+    ports:
+      - "53:53/udp"
+      - "5380:5380/tcp"
+    volumes:
+      - technitium-data:/etc/dns
+    environment:
+      - DNS_SERVER_ADMIN_PASSWORD=changeme
+    restart: unless-stopped
+
+volumes:
+  technitium-data:
