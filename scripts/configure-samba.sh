@@ -1,0 +1,45 @@
+#!/bin/bash
+
+set -e
+
+USERNAME="etudiant"
+PROJECT_PATH="/home/$USERNAME/mon-projet-web"
+SHARE_NAME="web"
+
+# --- 1. Installer Samba
+echo "[+] Installation de Samba"
+sudo apt update
+sudo apt install -y samba
+
+# --- 2. Créer le dossier du projet si besoin
+if [ ! -d "$PROJECT_PATH" ]; then
+    echo "[+] Création du dossier projet à $PROJECT_PATH"
+    sudo -u "$USERNAME" mkdir -p "$PROJECT_PATH"
+fi
+
+# --- 3. Sauvegarde de la configuration samba
+echo "[*] Sauvegarde de /etc/samba/smb.conf"
+sudo cp /etc/samba/smb.conf /etc/samba/smb.conf.bak
+
+# --- 4. Ajouter la section de partage si elle n'existe pas
+if ! grep -q "^\[$SHARE_NAME\]" /etc/samba/smb.conf; then
+    echo "[+] Ajout du partage [$SHARE_NAME] à smb.conf"
+    cat <<EOF | sudo tee -a /etc/samba/smb.conf > /dev/null
+
+[$SHARE_NAME]
+   path = $PROJECT_PATH
+   browsable = yes
+   read only = no
+   guest ok = yes
+   force user = $USERNAME
+EOF
+fi
+
+# --- 5. Redémarrer Samba
+echo "[+] Redémarrage du service Samba"
+sudo systemctl restart smbd
+
+# --- 6. Résumé
+echo "[✔] Partage configuré : \\$(hostname -I | awk '{print $1}')\\$SHARE_NAME"
+echo "[ℹ] Pour accéder au projet sous Windows, monte le lecteur :"
+echo "    \\\\$(hostname -I | awk '{print $1}')\\$SHARE_NAME"
