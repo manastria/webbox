@@ -70,15 +70,28 @@ sudo -u "$USERNAME" mkdir -p "$USER_HOME/.config/gtk-3.0"
 echo "smb://$IP_SITE/$SHARE_NAME Partage Web" | sudo tee "$USER_HOME/.config/gtk-3.0/bookmarks" > /dev/null
 sudo chown -R "$USERNAME:$USERNAME" "$USER_HOME/.config"
 
-# --- 6. Démarrage automatique de Firefox + setxkbmap fr
-echo "[+] Ajout de Firefox et setxkbmap à l'autostart de LXDE"
+# --- 6. Démarrage automatique : conserver l'autostart LXDE et ajouter clavier + Firefox
+echo "[+] Configuration de l'autostart LXDE"
 AUTOSTART_DIR="$USER_HOME/.config/lxsession/LXDE"
 sudo -u "$USERNAME" mkdir -p "$AUTOSTART_DIR"
-cat <<EOF | sudo tee "$AUTOSTART_DIR/autostart" > /dev/null
-@setxkbmap fr
-@firefox-esr http://$IP_SITE
-EOF
 
+AUTOSTART_FILE="$AUTOSTART_DIR/autostart"
+
+# 1) Copier le fichier modèle si l'utilisateur n'en a pas encore
+if [ ! -f "$AUTOSTART_FILE" ]; then
+    sudo -u "$USERNAME" cp /etc/xdg/lxsession/LXDE/autostart "$AUTOSTART_FILE"
+fi
+
+# 2) Ajouter @setxkbmap fr si absent
+grep -qxF '@setxkbmap fr' "$AUTOSTART_FILE" || \
+    echo '@setxkbmap fr' | sudo tee -a "$AUTOSTART_FILE" >/dev/null
+
+# 3) Ajouter le lancement de Firefox si absent
+grep -qxF "@firefox-esr http://$IP_SITE" "$AUTOSTART_FILE" || \
+    echo "@firefox-esr http://$IP_SITE" | sudo tee -a "$AUTOSTART_FILE" >/dev/null
+
+# 4) Droits
 sudo chown -R "$USERNAME:$USERNAME" "$USER_HOME/.config"
+
 
 echo "[✔] Installation et configuration terminées pour l'utilisateur $USERNAME"
