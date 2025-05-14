@@ -7,7 +7,6 @@ services:
       - ./public:/var/www/html
       - ./php/xdebug.ini:/usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
     environment:
-      XDEBUG_MODE: debug
       XDEBUG_CONFIG: "client_host=${XDEBUG_CLIENT_HOST} client_port=9003"
 
   node:
