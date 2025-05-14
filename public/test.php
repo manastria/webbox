@@ -1,0 +1,13 @@
+<?php
+// test_debug.php
+
+function calcul($a, $b) {
+    $resultat = $a + $b;
+    return $resultat;
+}
+
+$x = 10;
+$y = 20;
+$z = calcul($x, $y);
+
+echo "Résultat : $z\n";
