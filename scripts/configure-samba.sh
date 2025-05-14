@@ -19,7 +19,7 @@ fi
 
 # --- 3. Sauvegarde de la configuration samba
 echo "[*] Sauvegarde de /etc/samba/smb.conf"
-sudo cp /etc/samba/smb.conf /etc/samba/smb.conf.bak
+sudo cp /etc/samba/smb.conf /etc/samba/smb.conf.bak.$(date +%Y-%m-%dT%H:%M:%S)
 
 # --- 4. Ajouter la section de partage si elle n'existe pas
 if ! grep -q "^\[$SHARE_NAME\]" /etc/samba/smb.conf; then
