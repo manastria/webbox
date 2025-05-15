@@ -61,7 +61,7 @@ services:
     volumes:
       - technitium-data:/etc/dns
     environment:
-      - DNS_SERVER_ADMIN_PASSWORD=changeme
+      - DNS_SERVER_ADMIN_PASSWORD=netlab123
     restart: unless-stopped
 
 volumes:
