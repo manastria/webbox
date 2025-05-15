@@ -28,7 +28,7 @@ echo "[+] Installation de LXDE et des utilitaires"
 sudo apt update
 sudo apt install --no-install-recommends -y \
     lxde-core \
-    lightdm \
+    lightdm lxterminal \
     lightdm-gtk-greeter lightdm-gtk-greeter-settings \
     xserver-xorg xserver-xorg-video-all xserver-xorg-input-all \
     console-setup keyboard-configuration \
