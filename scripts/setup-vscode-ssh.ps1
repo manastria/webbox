@@ -1,5 +1,5 @@
 # --- Valeurs par défaut ---
-$defaultHost = "192.168.56.10"
+$defaultHost = "192.168.56.50"
 $defaultUser = "etudiant"
 $keyName     = "id_ed25519"
 $keyPath     = "$env:USERPROFILE\.ssh\$keyName"

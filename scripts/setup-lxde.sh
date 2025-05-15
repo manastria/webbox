@@ -5,7 +5,7 @@ set -e
 # --- Variables
 USERNAME="etudiant"
 USER_HOME="/home/$USERNAME"
-IP_SITE="192.168.56.101"
+IP_SITE="192.168.56.50"
 SHARE_NAME="www"
 
 # sudo apt update && sudo apt upgrade -y
