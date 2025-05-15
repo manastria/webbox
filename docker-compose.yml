@@ -9,6 +9,9 @@ services:
       - ./php/99-dev.ini:/usr/local/etc/php/conf.d/99-dev.ini
     environment:
       XDEBUG_CONFIG: "client_host=${XDEBUG_CLIENT_HOST} client_port=9003"
+    depends_on:
+      db:
+        condition: service_healthy
 
   node:
     build: ./node
@@ -16,6 +19,34 @@ services:
     volumes:
       - .:/app
     command: tail -f /dev/null
+
+  db:
+    image: mysql:8.0
+    container_name: lamp_db
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    volumes:
+      - db_data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      retries: 5
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: lamp_phpmyadmin
+    ports:
+      - "8060:80"
+    environment:
+      PMA_HOST: db
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    depends_on:
+      - db
 
   technitium-dns:
     image: technitium/dns-server
