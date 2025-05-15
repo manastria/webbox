@@ -12,6 +12,7 @@ services:
     depends_on:
       db:
         condition: service_healthy
+    restart: unless-stopped
 
   node:
     build: ./node
@@ -19,6 +20,7 @@ services:
     volumes:
       - .:/app
     command: tail -f /dev/null
+    restart: unless-stopped
 
   db:
     image: mysql:8.0
@@ -36,6 +38,7 @@ services:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       interval: 10s
       retries: 5
+    restart: unless-stopped
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
@@ -47,6 +50,7 @@ services:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
     depends_on:
       - db
+    restart: unless-stopped
 
   technitium-dns:
     image: technitium/dns-server
