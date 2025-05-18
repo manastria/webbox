@@ -3,11 +3,12 @@ set -e
 
 # --- Charger les variables
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$SCRIPT_DIR/../lib/log.sh"
 source "$SCRIPT_DIR/vars.sh"
 
 # --- Clé publique à autoriser
 read -r -d '' PUB_KEY <<'EOF'
-ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIG/GbOz9gfH+F3f96xRN6GieKa6Eyj1kkvzSa86/i+wr WebBox
+ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIG/GbOz9gfH+F3f96xRN6GieKa6Eyj1kkvzSa86/i+wr webbox
 EOF
 
 # --- Dossier .ssh de l'utilisateur
@@ -17,7 +18,8 @@ AUTHORIZED_KEYS="$USER_SSH_DIR/authorized_keys"
 echo "[+] Configuration de la clé SSH pour $USERNAME"
 
 # Créer le dossier .ssh avec les bons droits
-sudo -u "$USERNAME" mkdir -p "$USER_SSH_DIR"
+log STEP "Création du dossier $USER_SSH_DIR"
+sudo -u "$USERNAME" HOME="$USER_HOME" mkdir -p "$USER_SSH_DIR"
 sudo chmod 700 "$USER_SSH_DIR"
 sudo chown "$USERNAME:$USERNAME" "$USER_SSH_DIR"
 
