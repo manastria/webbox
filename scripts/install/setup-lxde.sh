@@ -10,10 +10,7 @@ source "$SCRIPT_DIR/vars.sh"
 
 # sudo apt update && sudo apt upgrade -y
 
-# --- 1. Créer l'utilisateur s'il n'existe pas
-"$SCRIPT_DIR/add_user.sh"
-
-# --- 2. Installer l'environnement graphique LXDE minimal
+# --- 1. Installer l'environnement graphique LXDE minimal
 echo "[+] Installation de LXDE et des utilitaires"
 sudo apt update
 sudo apt install --no-install-recommends -y \
@@ -28,6 +25,10 @@ sudo apt install --no-install-recommends -y \
     gvfs-backends \
     php-cli \
     samba-client
+
+# --- 1. Créer l'utilisateur s'il n'existe pas
+echo "[+] Création de l'utilisateur $USERNAME"
+"$SCRIPT_DIR/add_user.sh"
 
 # --- 3. Configurer le clavier en AZERTY (FR)
 echo "[+] Configuration du clavier en français (AZERTY)"
@@ -83,5 +84,18 @@ grep -qxF "@firefox-esr http://$IP_SITE" "$AUTOSTART_FILE" || \
 
 # 4) Droits
 sudo chown -R "$USERNAME:$USERNAME" "$USER_HOME/.config"
+
+
+# --- 7. Configurer le hostname
+echo "[+] Configuration du hostname"
+"$SCRIPT_DIR/hostname.sh"
+
+# --- 7. Configurer le réseau
+echo "[+] Configuration du réseau"
+"$SCRIPT_DIR/config_hostonly_eth0.sh"
+
+# --- 8. Installer et configurer Samba
+echo "[+] Installation de Samba"
+"$SCRIPT_DIR/configure-samba.sh"
 
 echo "[✔] Installation et configuration terminées pour l'utilisateur $USERNAME"

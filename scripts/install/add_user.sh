@@ -30,7 +30,7 @@ fi
 
 # 2) Cloner le dépôt WebBox dans le home de l'utilisateur
 if [ ! -d "$USER_HOME/webbox" ]; then
-    sudo -u "$USERNAME" git clone https://github.com/manastria/webbox.git "$USER_HOME/webbox"
+    sudo -u "$USERNAME" git clone ${REPO_URL} "$USER_HOME/webbox"
 else
     echo "[!] Le dossier webbox existe déjà dans $USER_HOME"
 fi

@@ -2,15 +2,17 @@
 
 set -e
 
-USERNAME="etudiant"
-PROJECT_DIR="/home/$USERNAME/mon-projet-web"
-REPO_URL="https://github.com/manastria/docker_php_node_env.git"
+# --- Variables
+# Source les variables communes
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$SCRIPT_DIR/vars.sh"
 
-echo "[+] Clonage du dépôt dans $PROJECT_DIR"
+# --- 1. Cloner le dépôt WebBox dans le répertoire de l'utilisateur
+echo "[+] Clonage du dépôt dans $PROJECT_PATH"
 
 # 1. Créer le répertoire s'il n'existe pas
-if [ ! -d "$PROJECT_DIR" ]; then
-    sudo -u "$USERNAME" mkdir -p "$PROJECT_DIR"
+if [ ! -d "$PROJECT_PATH" ]; then
+    sudo -u "$USERNAME" mkdir -p "$PROJECT_PATH"
 fi
 
 # 2. Cloner le dépôt dans un répertoire temporaire
@@ -19,13 +21,13 @@ rm -rf "$TMP_CLONE"
 git clone "$REPO_URL" "$TMP_CLONE"
 
 # 3. Copier le contenu dans le dossier final (sans sous-dossier .git)
-cp -r "$TMP_CLONE"/* "$PROJECT_DIR"
-cp -r "$TMP_CLONE"/.[!.]* "$PROJECT_DIR" || true  # copie les fichiers cachés sauf . et ..
+cp -r "$TMP_CLONE"/* "$PROJECT_PATH"
+cp -r "$TMP_CLONE"/.[!.]* "$PROJECT_PATH" || true  # copie les fichiers cachés sauf . et ..
 
 # 4. Nettoyer
 rm -rf "$TMP_CLONE"
 
 # 5. Droits
-chown -R "$USERNAME:$USERNAME" "$PROJECT_DIR"
+chown -R "$USERNAME:$USERNAME" "$PROJECT_PATH"
 
-echo "[✔] Projet cloné et prêt dans $PROJECT_DIR"
+echo "[✔] Projet cloné et prêt dans $PROJECT_PATH"
