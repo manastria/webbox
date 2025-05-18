@@ -1,32 +1,13 @@
 #!/bin/bash
 set -e
-set -x
-
 
 # --- Charger les variables
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/../lib/log.sh"
 source "$SCRIPT_DIR/vars.sh"
 
-
-
-
-echo "[~] SCRIPT_DIR=$SCRIPT_DIR"
-echo "[~] Vérification de $SCRIPT_DIR/../lib/log.sh"
-echo "[~] Vérification de $SCRIPT_DIR/vars.sh"
-
-ls -l "$SCRIPT_DIR/../lib/log.sh" "$SCRIPT_DIR/vars.sh"
-
-
-
-
-
-
-
 # --- Clé publique à autoriser
-read -r -d '' PUB_KEY <<'EOF'
-ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIG/GbOz9gfH+F3f96xRN6GieKa6Eyj1kkvzSa86/i+wr webbox
-EOF
+PUB_KEY='ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIG/GbOz9gfH+F3f96xRN6GieKa6Eyj1kkvzSa86/i+wr webbox'
 
 # --- Dossier .ssh de l'utilisateur
 USER_SSH_DIR="$USER_HOME/.ssh"
