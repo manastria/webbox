@@ -1,3 +1,8 @@
+﻿# --- Forcer l'encodage UTF-8 dans la console ---
+chcp 65001 > $null
+$OutputEncoding = [Console]::OutputEncoding = [Text.UTF8Encoding]::new($false)
+$PSDefaultParameterValues['*:Encoding'] = 'utf8'
+
 # --- Valeurs par défaut ---
 $defaultHost = "192.168.56.50"
 $defaultUser = "etudiant"
@@ -58,8 +63,12 @@ if (-Not (Test-Path $configPath)) {
 }
 
 # Supprimer ancienne entrée s'il y en a une
-$content = Get-Content $configPath -Raw
+$content = Get-Content $configPath -Raw -ErrorAction SilentlyContinue
+if ($null -eq $content) { $content = "" }
+
+# Supprimer l’ancienne entrée
 $content = $content -replace "Host $hostAlias.*?(?=Host |\z)", ""
+
 Set-Content -Path $configPath -Value ($content.Trim() + "`r`n" + $configEntry)
 
 Write-Host "`n[OK] Configuration terminée."
