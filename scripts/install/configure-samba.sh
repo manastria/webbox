@@ -3,7 +3,7 @@
 set -e
 
 USERNAME="etudiant"
-PROJECT_PATH="/home/$USERNAME/mon-projet-web"
+PROJECT_PATH="/home/$USERNAME/webbox"
 SHARE_NAME="web"
 
 # --- 1. Installer Samba
