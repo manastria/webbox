@@ -4,7 +4,7 @@ $defaultUser = "etudiant"
 $keyName     = "id_ed25519"
 $keyPath     = "$env:USERPROFILE\.ssh\$keyName"
 $configPath  = "$env:USERPROFILE\.ssh\config"
-$hostAlias   = "vm-linux-projet"
+$hostAlias   = "WebBox"
 
 # --- Lecture des infos utilisateur ---
 $vmHost = Read-Host "Adresse IP de la VM (par défaut : $defaultHost)"
