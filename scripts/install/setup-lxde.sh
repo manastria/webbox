@@ -35,7 +35,7 @@ sudo apt install --no-install-recommends -y \
     pcmanfm \
     mousepad \
     gvfs-backends \
-    php \
+    php-cli \
     samba-client
 
 # --- 3. Configurer le clavier en AZERTY (FR)
