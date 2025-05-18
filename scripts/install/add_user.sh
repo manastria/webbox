@@ -8,6 +8,8 @@ source "$SCRIPT_DIR/vars.sh"
 # --- Variables
 GROUPS_TO_ADD="sudo,docker,admins"
 
+echo "[~] Script add_user.sh"
+
 # --- 1. Ajouter l'utilisateur s'il n'existe pas
 if ! id "$USERNAME" &>/dev/null; then
     echo "[+] Création de l'utilisateur $USERNAME"
@@ -36,14 +38,15 @@ else
 fi
 
 # 3) Cloner et appliquer les dotfiles avec yadm
-sudo -u "$USERNAME" yadm clone https://github.com/manastria/dotfile.git || {
+if ! sudo -u "$USERNAME" HOME="$USER_HOME" yadm clone https://github.com/manastria/dotfile.git; then
     echo "[!] Échec du clone YADM, tentative de suppression du dépôt existant..."
-    sudo -u "$USERNAME" rm -rf "$USER_HOME/.local/share/yadm/repo.git"
-    sudo -u "$USERNAME" yadm clone https://github.com/manastria/dotfile.git
-}
+    sudo -u "$USERNAME" HOME="$USER_HOME" rm -rf "$USER_HOME/.local/share/yadm/repo.git"
+    sudo -u "$USERNAME" HOME="$USER_HOME" yadm clone https://github.com/manastria/dotfile.git
+fi
 
 # 4) Forcer l'application des dotfiles depuis la branche master
-sudo -u "$USERNAME" yadm reset --hard master
+sudo -u "$USERNAME" HOME="$USER_HOME" yadm reset --hard master
+
 
 echo "[✔] Dépôts clonés et dotfiles appliqués pour $USERNAME"
 

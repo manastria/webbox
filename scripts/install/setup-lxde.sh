@@ -27,7 +27,6 @@ sudo apt install --no-install-recommends -y \
     samba-client
 
 # --- 1. Créer l'utilisateur s'il n'existe pas
-echo "[+] Création de l'utilisateur $USERNAME"
 "$SCRIPT_DIR/add_user.sh"
 
 # --- 3. Configurer le clavier en AZERTY (FR)

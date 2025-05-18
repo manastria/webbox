@@ -7,6 +7,8 @@ set -e
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/vars.sh"
 
+echo "[~] Script clone-projet.sh"
+
 # --- 1. Cloner le dépôt WebBox dans le répertoire de l'utilisateur
 echo "[+] Clonage du dépôt dans $PROJECT_PATH"
 
