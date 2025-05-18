@@ -11,15 +11,15 @@ SHARE_NAME="www"
 # sudo apt update && sudo apt upgrade -y
 
 # --- 1. Créer l'utilisateur s'il n'existe pas
+GROUPS_TO_ADD="sudo,docker,admins"
+
 if ! id "$USERNAME" &>/dev/null; then
     echo "[+] Création de l'utilisateur $USERNAME"
     sudo adduser --gecos "" --disabled-password "$USERNAME"
     echo "$USERNAME:netlab123" | sudo chpasswd
-    sudo usermod -aG sudo,docker,admins "$USERNAME"
-else
-    echo "[*] L'utilisateur $USERNAME existe déjà"
-    sudo usermod -aG sudo,docker,admins "$USERNAME"
 fi
+
+sudo usermod -aG "$GROUPS_TO_ADD" "$USERNAME"
 
 
 # --- 2. Installer l'environnement graphique LXDE minimal
