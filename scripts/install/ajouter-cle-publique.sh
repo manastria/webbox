@@ -1,10 +1,27 @@
 #!/bin/bash
 set -e
+set -x
+
 
 # --- Charger les variables
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/../lib/log.sh"
 source "$SCRIPT_DIR/vars.sh"
+
+
+
+
+echo "[~] SCRIPT_DIR=$SCRIPT_DIR"
+echo "[~] Vérification de $SCRIPT_DIR/../lib/log.sh"
+echo "[~] Vérification de $SCRIPT_DIR/vars.sh"
+
+ls -l "$SCRIPT_DIR/../lib/log.sh" "$SCRIPT_DIR/vars.sh"
+
+
+
+
+
+
 
 # --- Clé publique à autoriser
 read -r -d '' PUB_KEY <<'EOF'
