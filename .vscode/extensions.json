@@ -1,5 +1,7 @@
 {
     "recommendations": [
-        "xdebug.php-debug"
+        "xdebug.php-debug",
+        "ms-vscode-remote.remote-containers",
+        "devsense.phptools-vscode",
     ]
 }

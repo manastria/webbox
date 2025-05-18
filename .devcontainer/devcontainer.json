@@ -1,0 +1,12 @@
+// .devcontainer/devcontainer.json
+{
+  "name": "LAMP Dev",
+  "dockerComposeFile": "../docker-compose.yml",
+  "service": "web",               // le service qui contient PHP
+  "workspaceFolder": "/var/www/html",
+  "remoteUser": "root",           // ou 'vscode' si vous l'ajoutez à l'image
+  "forwardPorts": [80, 3306],
+  "features": {
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {}
+  }
+}
