@@ -2,9 +2,10 @@
 
 set -e
 
-USERNAME="etudiant"
-PROJECT_PATH="/home/$USERNAME/webbox"
-SHARE_NAME="web"
+# --- Variables
+# Source les variables communes
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$SCRIPT_DIR/vars.sh"
 
 # --- 1. Installer Samba
 echo "[+] Installation de Samba"
