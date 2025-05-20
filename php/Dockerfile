@@ -14,7 +14,6 @@ RUN apt-get update && apt-get install -y \
         gd \
         opcache \
         bcmath \
-        tokenizer \
     && pecl install xdebug \
     && docker-php-ext-enable xdebug
 
