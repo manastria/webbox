@@ -3,5 +3,6 @@
         "xdebug.php-debug",
         "ms-vscode-remote.remote-containers",
         "devsense.phptools-vscode",
+        "junstyle.php-cs-fixer",
     ]
 }

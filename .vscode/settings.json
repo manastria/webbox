@@ -1,0 +1,22 @@
+{
+  "editor.fontFamily": "Consolas, 'Courier New', monospace",
+  "editor.fontLigatures": false,
+  "[html]": {
+    "editor.defaultFormatter": "vscode.html-language-features",
+    "editor.tabSize": 2,
+    "editor.insertSpaces": true
+  },
+  "[php]": {
+    "editor.formatOnSave": false,
+    "editor.tabSize": 2,
+    "editor.insertSpaces": true
+  },
+  "intelephense.format.enable": false,
+  "editor.formatOnSave": false,
+  "eslint.validate": [
+    "javascript",
+    "javascriptreact",
+    "typescript"
+    // pas "html"
+  ]
+}
