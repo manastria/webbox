@@ -1,14 +1,15 @@
 ﻿#Requires -Version 3.0
 <#
 .SYNOPSIS
-  Monte des lecteurs réseau spécifiés.
+  Monte des lecteurs réseau spécifiés de manière persistante.
 .DESCRIPTION
   Ce script permet de monter deux lecteurs réseau (W: et P:) vers des partages sur un serveur distant.
+  Les lecteurs montés seront persistants (visibles dans l'Explorateur et tenteront de se reconnecter au démarrage).
   Il peut utiliser des identifiants pré-configurés ou les demander à l'utilisateur si non définis.
   Des messages colorés informent l'utilisateur de la progression et des éventuels problèmes.
 .NOTES
   Auteur: VotreNom/Société
-  Version: 1.1
+  Version: 1.2
   Date: 20/05/2025
 
   ATTENTION : Ce script peut contenir des identifiants (nom d'utilisateur et mot de passe)
@@ -23,8 +24,7 @@ $AdresseIPServeur = "192.168.56.50" # Exemple, à adapter ou laisser vide ""
 
 # Identifiants de connexion.
 # ATTENTION : Stocker des mots de passe en clair dans un script est une mauvaise pratique de sécurité.
-# Pour cet exercice pédagogique, ils sont ici. Pour une utilisation réelle, envisagez des solutions plus sûres.
-# Si $NomUtilisateur OU $MotDePasseEnClair sont vides, le script demandera les identifiants.
+# Si $NomUtilisateurConfig OU $MotDePasseEnClairConfig sont vides, le script demandera les identifiants.
 $NomUtilisateurConfig = "etudiant"
 $MotDePasseEnClairConfig = "netlab123" # LAISSER VIDE "" POUR FORCER LA DEMANDE INTERACTIVE
 
@@ -77,7 +77,8 @@ $Credential = $null
 if ([string]::IsNullOrWhiteSpace($NomUtilisateurConfig) -or [string]::IsNullOrWhiteSpace($MotDePasseEnClairConfig)) {
     Write-ColoredMessage "Identifiants non configurés ou partiellement configurés dans le script." -Color Yellow
     Write-ColoredMessage "Demande interactive des identifiants pour le serveur $AdresseIPServeur..." -Color Yellow
-    $Credential = Get-Credential -UserName $NomUtilisateurConfig -Message "Entrez vos identifiants pour le serveur $AdresseIPServeur"
+    $NomTemp = if ([string]::IsNullOrWhiteSpace($NomUtilisateurConfig)) { $null } else { $NomUtilisateurConfig }
+    $Credential = Get-Credential -UserName $NomTemp -Message "Entrez vos identifiants pour le serveur $AdresseIPServeur"
 
     if (-not $Credential) {
         Write-ColoredMessage "Aucun identifiant fourni. Le script va s'arrêter." -Color Red
@@ -109,40 +110,64 @@ foreach ($LecteurInfo in $Lecteurs) {
     Write-ColoredMessage ("-" * 40) -Color Gray
     Write-ColoredMessage "Traitement du lecteur $LettreLecteur`: ($DescriptionLecteur) vers $CheminPartageComplet" -Color White
 
-    # 1. Vérifier si le lecteur est déjà monté
-    $LecteurExistant = Get-PSDrive $LettreLecteur -ErrorAction SilentlyContinue
-    if ($LecteurExistant) {
-        Write-ColoredMessage "  Le lecteur $LettreLecteur`: existe déjà. Tentative de démontage..." -Color Yellow
+    # 1. Démontage préventif (plus robuste)
+    Write-ColoredMessage "  Vérification et tentative de démontage du lecteur $LettreLecteur`: ..." -NoNewline -Color Yellow
+    # Essayer de supprimer un PSDrive s'il existe
+    $existingPSDrive = Get-PSDrive $LettreLecteur -ErrorAction SilentlyContinue
+    if ($existingPSDrive) {
         try {
-            Remove-PSDrive -Name $LettreLecteur -Force -ErrorAction Stop
-            Write-ColoredMessage "  Lecteur $LettreLecteur`: démonté avec succès." -Color Green
+            Remove-PSDrive -Name $LettreLecteur -Force -ErrorAction SilentlyContinue # SilentlyContinue ici car net use suivra
+            Write-Host -NoNewline "." -ForegroundColor Yellow
         } catch {
-            Write-ColoredMessage "  ERREUR lors du démontage du lecteur $LettreLecteur`:. $($_.Exception.Message)" -Color Red
-            Write-ColoredMessage "  Veuillez vérifier qu'aucun fichier de ce lecteur n'est ouvert et réessayez." -Color Red
-            continue
+            # Ignorer l'erreur ici, net use s'en chargera
+            Write-Host -NoNewline "x" -ForegroundColor Yellow
         }
+    }
+    
+    # Utiliser 'net use /delete' pour une suppression plus complète des mappages existants
+    net use $LettreLecteur /delete /Y > $null 2>&1
+    $exitCodeNetUseDelete = $LASTEXITCODE
+    
+    if ($exitCodeNetUseDelete -eq 0) {
+        Write-ColoredMessage " Démontage réussi (ou pas de mappage existant via net use)." -Color Green
+    } elseif ($exitCodeNetUseDelete -eq 2) { # Code 2 = lecteur non mappé, ce qui est OK.
+        Write-ColoredMessage " OK (lecteur non trouvé, donc pas besoin de démonter via net use)." -Color Cyan
+    } else {
+        Write-ColoredMessage " AVERTISSEMENT lors du démontage via net use (Code: $exitCodeNetUseDelete). Conflit possible." -Color Yellow
     }
 
     # 2. Tentative de montage du nouveau lecteur
     Write-ColoredMessage "  Montage du lecteur $LettreLecteur`: vers $CheminPartageComplet..." -NoNewline -Color Yellow
     try {
-        New-PSDrive -Name $LettreLecteur -PSProvider FileSystem -Root $CheminPartageComplet -Credential $Credential -Scope Global -ErrorAction Stop # -Persist
+        # Utilisation de -Persist pour rendre le lecteur visible dans l'Explorateur et persistant
+        New-PSDrive -Name $LettreLecteur -PSProvider FileSystem -Root $CheminPartageComplet -Credential $Credential -Scope Global -Persist -ErrorAction Stop
         Write-ColoredMessage " RÉUSSI !" -Color Green
 
-        if (Test-Path "${LettreLecteur}:") {
+        # Vérification après montage
+        # Pour Test-Path sur un lecteur, il est préférable d'utiliser "X:\"
+        if (Test-Path "${LettreLecteur}:\") {
             Write-ColoredMessage "  Vérification : Le lecteur $LettreLecteur`: est accessible." -Color Green
         } else {
-            Write-ColoredMessage "  AVERTISSEMENT : Le lecteur $LettreLecteur`: a été monté mais n'est pas immédiatement accessible. Un problème subsiste peut-être." -Color Yellow
+            Write-ColoredMessage "  AVERTISSEMENT : Le lecteur $LettreLecteur`: semble monté mais Test-Path n'y accède pas. Vérifiez manuellement." -Color Yellow
         }
 
     } catch {
         Write-ColoredMessage " ÉCHEC !" -Color Red
-        Write-ColoredMessage "  ERREUR : Impossible de monter le lecteur $LettreLecteur`:. $($_.Exception.Message)" -Color Red
-        Write-ColoredMessage "  Vérifiez l'adresse IP, le nom du partage, vos identifiants et votre connexion réseau." -Color Red
+        $ErrorMessage = $_.Exception.Message
+        Write-ColoredMessage "  ERREUR : Impossible de monter le lecteur $LettreLecteur`:. $ErrorMessage" -Color Red
+        
+        # Gestion de l'erreur commune "multiple connections"
+        if ($ErrorMessage -like "*multiple connections to a server or shared resource by the same user*") {
+            Write-ColoredMessage "  CAUSE POSSIBLE : Connexion existante au serveur '$AdresseIPServeur' avec des identifiants différents." -Color Magenta
+            Write-ColoredMessage "  SOLUTION SUGGÉRÉE : Déconnectez toutes les connexions à ce serveur (via 'net use * /delete' ou l'Explorateur) et réessayez." -Color Magenta
+        } else {
+            Write-ColoredMessage "  Vérifiez l'adresse IP, le nom du partage, vos identifiants et votre connexion réseau." -Color Red
+        }
     }
 }
 
 Write-ColoredMessage ("-" * 40) -Color Gray
 Write-Host # Ligne vide
 Write-ColoredMessage "Opération terminée." -Color Cyan
+Write-ColoredMessage "Veuillez vérifier la présence des lecteurs dans l'Explorateur de fichiers." -Color White
 Read-Host "Appuyez sur la touche Entrée pour fermer cette fenêtre."
