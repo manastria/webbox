@@ -33,6 +33,15 @@ if ! grep -q "^\[$SHARE_NAME\]" /etc/samba/smb.conf; then
    read only = no
    guest ok = no
    force user = $USERNAME
+
+[public]
+   path = $PROJECT_PATH/public
+   browsable = yes
+   read only = no
+   guest ok = no
+   force user = etudiant
+
+
 EOF
 fi
 
