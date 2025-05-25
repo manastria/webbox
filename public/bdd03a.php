@@ -1,39 +1,63 @@
 <!-- Fichier : bdd03a.php -->
- <!DOCTYPE html>
- <html lang="en">
- <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Liste des employés</title>
- </head>
-<body>
 <?php
-$connexion = mysqli_connect("db","etudiant","etudiant","empScePhp");
-if ($connexion) 
-{
-  // connexion réussie
-  mysqli_set_charset ($connexion,"utf8");
-  $requete="select nom,prenom from employe where service='".$_POST["service"]."';";
-  $nb=0;
-  echo "<h1>Liste nominative des employés</h1>";
-  echo '<p /><table border="2" width="75%">';
-  echo "<tr><th>NOM</th><th>PRENOM</th></tr>";
-  $resultat= mysqli_query($connexion, $requete);
-  $ligne=mysqli_fetch_assoc($resultat);
-  while($ligne) 
-  {
-    echo "<tr><td>".$ligne["nom"]."</td><td>".$ligne["prenom"]."</td></tr>";
-    $nb++;
-    $ligne=mysqli_fetch_assoc($resultat);
+// Connexion à la base (paramètres centralisés)
+include("connexion.php");
+
+// Initialisation
+$employes = [];
+$nb = 0;
+
+if ($connexion) {
+  mysqli_set_charset($connexion, "utf8");
+
+  // On récupère le service sélectionné dans le formulaire précédent
+  $code_service = $_POST["service"];
+
+  // On prépare la requête
+  $requete = "SELECT nom, prenom FROM employe WHERE service = '$code_service';";
+
+  $resultat = mysqli_query($connexion, $requete);
+
+  while ($ligne = mysqli_fetch_assoc($resultat)) {
+    $employes[] = $ligne;
   }
-  echo "</table><p />";
-  echo "Il y a ".$nb." employés.";
+
+  $nb = count($employes);
+
+  mysqli_close($connexion);
+} else {
+  $erreur = "Problème à la connexion à la base de données.";
 }
-else
-{
-  echo "problème à la connexion <br />";
-}
-mysqli_close($connexion);
 ?>
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Liste des employés</title>
+</head>
+<body>
+
+<?php if (isset($erreur)): ?>
+  <p><?= $erreur ?></p>
+<?php else: ?>
+  <h1>Liste nominative des employés</h1>
+
+  <table border="2" width="75%">
+    <tr>
+      <th>NOM</th>
+      <th>PRÉNOM</th>
+    </tr>
+    <?php foreach ($employes as $emp): ?>
+      <tr>
+        <td><?= $emp["nom"] ?></td>
+        <td><?= $emp["prenom"] ?></td>
+      </tr>
+    <?php endforeach; ?>
+  </table>
+
+  <p>Il y a <?= $nb ?> employés.</p>
+<?php endif; ?>
+
 </body>
 </html>

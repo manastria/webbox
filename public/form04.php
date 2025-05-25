@@ -1,18 +1,21 @@
 <!-- Fichier : form04.php -->
 <!DOCTYPE html>
-<html lang="en">
-
+<html>
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
+  <title>Résultat du formulaire</title>
 </head>
-
 <body>
-  <?php
-  echo "Bonjour " . $_POST["prenom"] . "<br />";
-  echo "Vous avez cliqué sur le bouton " . $_POST["validation"];
-  ?>
-</body>
 
+<?php
+// On récupère les données envoyées par le formulaire
+$prenom = $_POST["prenom"];
+$validation = $_POST["validation"];
+?>
+
+<!-- On affiche les résultats -->
+<p>Bonjour <?= $prenom ?></p>
+<p>Vous avez cliqué sur le bouton : <?= $validation ?></p>
+
+</body>
 </html>

@@ -1,13 +1,24 @@
 <!-- Fichier : form02.php -->
+<!DOCTYPE html>
 <html>
-<head><title>Un petit bonjour</title></head>
+<head>
+  <meta charset="UTF-8" />
+  <title>Un petit bonjour</title>
+</head>
 <body>
+
 <?php
-if (empty($_POST["familier"])) {
-  echo "Bonjour " . $_POST["prenom"];
+// Récupération des données du formulaire
+$prenom = $_POST["prenom"];
+$familier = $_POST["familier"];
+
+// Si la case "familier" n'est pas cochée, la variable est vide
+if (empty($familier)) {
+  echo "<p>Bonjour " . $prenom . "</p>";
 } else {
-  echo "Salut " . $_POST["prenom"];
+  echo "<p>Salut " . $prenom . "</p>";
 }
 ?>
+
 </body>
 </html>

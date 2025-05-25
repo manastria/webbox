@@ -1,34 +1,62 @@
-<html><head><title>Ajout d'un employé</title></head><body>
+<!-- Fichier : bdd04a.php -->
 <?php
-$connexion = mysqli_connect("db","etudiant","etudiant","empScePhp");
-if ($connexion) 
-{
-  // connexion réussie
-  mysqli_set_charset ($connexion,"utf8");
-  if (empty($_POST["cadre"]))
-  {
-     $charCadre='n';
+// Connexion à la base (paramètres centralisés)
+include("connexion.php");
+
+// Initialisation
+$message = "";
+
+// Traitement si la connexion est réussie
+if ($connexion) {
+  mysqli_set_charset($connexion, "utf8");
+
+  // Récupération et traitement des données du formulaire
+  $matricule = $_POST["matricule"];
+  $nom = $_POST["nom"];
+  $prenom = $_POST["prenom"];
+  $service = $_POST["service"];
+
+  // On transforme la case à cocher "cadre" en 'o' ou 'n'
+  if (empty($_POST["cadre"])) {
+    $cadre = 'n';
+  } else {
+    $cadre = 'o';
   }
-  else
-  {
-     $charCadre='o';
+
+  // Requête SQL d'insertion
+  $requete = "INSERT INTO employe VALUES (
+    '$matricule',
+    '$nom',
+    '$prenom',
+    '$cadre',
+    '$service'
+  );";
+
+  // Exécution de la requête
+  $ok = mysqli_query($connexion, $requete);
+
+  // Message en fonction du résultat
+  if ($ok) {
+    $message = "L'employé a été correctement ajouté.";
+  } else {
+    $message = "❌ L'ajout de l'employé a échoué.";
   }
-  $requete="insert into employe values ('".$_POST["matricule"]."','".$_POST["nom"]."','"
-.$_POST["prenom"]."','".$charCadre."','".$_POST["service"]."');";
-  $ok= mysqli_query($connexion, $requete);
-  if ($ok)
-  {
-    echo "L'employé a été correctement ajouté";
-  }
-  else
-  {
-    echo "Attention, l'ajout de l'employé a échoué !!!";
-  }
+
+  mysqli_close($connexion);
+} else {
+  $message = "Problème à la connexion à la base de données.";
 }
-else
-{
-  echo "problème à la connexion <br />";
-}
-mysqli_close($connexion);
 ?>
-</body></html>
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Ajout d'un employé</title>
+</head>
+<body>
+
+<p><?= $message ?></p>
+
+</body>
+</html>

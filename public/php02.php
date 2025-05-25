@@ -1,21 +1,28 @@
 <!-- Fichier : php02.php -->
+<!DOCTYPE html>
 <html>
-
 <head>
-  <title>Second script php</title>
+  <meta charset="UTF-8">
+  <title>Second script PHP</title>
 </head>
-
 <body>
-  <?php
-  // ceci est un commentaire
-  $jour = date("d");
-  $mois = date("m");
-  $an = date("Y");
-  echo "Bonjour, ici Big Brother...<br /><br />";
-  echo "Nous sommes le " . $jour . "/" . $mois . "/" . $an . "<br />";
-  echo 'Votre adresse IP est ' . $_SERVER["REMOTE_ADDR"] . "<br />";
-  echo "Vous utilisez le navigateur " . $_SERVER["HTTP_USER_AGENT"] . '<br />';
-  ?>
-</body>
 
+<?php
+// On récupère la date du jour
+$jour = date("d");
+$mois = date("m");
+$an   = date("Y");
+
+// On récupère des informations sur l'utilisateur
+$ip = $_SERVER["REMOTE_ADDR"];
+$navigateur = $_SERVER["HTTP_USER_AGENT"];
+?>
+
+<p>Bonjour, ici Big Brother...</p>
+
+<p>Nous sommes le <?= $jour ?>/<?= $mois ?>/<?= $an ?></p>
+<p>Votre adresse IP est : <?= $ip ?></p>
+<p>Vous utilisez le navigateur : <?= $navigateur ?></p>
+
+</body>
 </html>
