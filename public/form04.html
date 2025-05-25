@@ -1,27 +1,29 @@
+<!-- Fichier : form04.html -->
 <!DOCTYPE html>
-<html lang="en">
-
+<html>
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
-</head>
-<!-- Fichier : form04.html -->
-<html>
-
-<head>
   <title>Un petit bonjour</title>
 </head>
-
 <body>
-  <form action="form04.php" method="post">
-    Entrez votre prénom :
-    <input type="text" name="prenom" size="20" />
-    <p />
-    <input type="submit" name="validation" value="Envoyer" />
-    <input type="submit" name="validation" value="Expédier" />
-    <input type="reset" value="Annuler" />
-  </form>
-</body>
 
+<h2>Choisissez une action</h2>
+
+<form action="form04.php" method="post">
+
+  <p>
+    <label for="prenom">Entrez votre prénom :</label>
+    <input type="text" name="prenom" id="prenom" size="20">
+  </p>
+
+  <p>
+    <!-- Deux boutons submit avec des valeurs différentes -->
+    <button type="submit" name="validation" value="Envoyer">Envoyer</button>
+    <button type="submit" name="validation" value="Expédier">Expédier</button>
+    <button type="reset">Annuler</button>
+  </p>
+
+</form>
+
+</body>
 </html>

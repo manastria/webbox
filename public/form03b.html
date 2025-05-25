@@ -1,29 +1,43 @@
+<!-- Fichier : form03b.html -->
 <!DOCTYPE html>
-<html lang="en">
-
+<html>
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
+  <title>Un petit bonjour</title>
 </head>
-
 <body>
-  <form action="form03.php" method="post">
-    Entrez votre prénom :
-    <input type="text" name="prenom" size="20" />
-    <p />
-    <select name="politesse" size="1">
-      <option selected value="1">Mademoiselle</option>
+
+<h2>Formulaire de salutation</h2>
+
+<form action="form03.php" method="post">
+
+  <p>
+    <label for="prenom">Entrez votre prénom :</label>
+    <input type="text" name="prenom" id="prenom" size="20">
+  </p>
+
+  <p>
+    <label for="politesse">Votre civilité :</label>
+    <select name="politesse" id="politesse" size="1">
+      <option value="1" selected>Mademoiselle</option>
       <option value="2">Madame</option>
       <option value="3">Monsieur</option>
     </select>
-    <p />
-    Cochez cette case pour un bonjour plus familier
-    <input type="checkbox" name="familier" />
-    <p />
-    <input type="submit" value="Envoyer" />
-    <input type="reset" value="Annuler" />
-  </form>
-</body>
+  </p>
 
+  <p>
+    <label>
+      <input type="checkbox" name="familier">
+      Cochez cette case pour un bonjour plus familier
+    </label>
+  </p>
+
+  <p>
+    <button type="submit">Envoyer</button>
+    <button type="reset">Annuler</button>
+  </p>
+
+</form>
+
+</body>
 </html>

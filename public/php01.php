@@ -1,7 +1,8 @@
 <!-- Fichier : php01.php -->
+<!DOCTYPE html>
 <html>
-
 <head>
+  <meta charset="UTF-8" />
   <title>Premier script php</title>
 </head>
 
