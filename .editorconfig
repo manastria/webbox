@@ -14,9 +14,9 @@ charset = utf-8
 # entre les différents éditeurs que les tabulations.
 indent_style = space
 
-# Taille de l'indentation : 4 espaces. C'est un standard très répandu
+# Taille de l'indentation : 2 espaces. C'est un standard très répandu
 # en PHP, HTML et CSS.
-indent_size = 4
+indent_size = 2
 
 # Type de fin de ligne : 'lf' (Line Feed) est le standard sur les systèmes
 # Linux (le 'L' de LAMP) et macOS. Cela évite les conflits avec le 'crlf' de Windows.
