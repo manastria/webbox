@@ -1,12 +1,41 @@
 # EditorConfig is awesome: https://EditorConfig.org
 
-# top-most EditorConfig file
+# Le fichier de configuration principal. L'éditeur arrêtera de chercher des
+# fichiers .editorconfig dans les dossiers parents.
 root = true
 
+# Règles s'appliquant à tous les fichiers du projet
 [*]
-indent_style = space
-indent_size = 2
-end_of_line = lf
+# Encodage des caractères : UTF-8 est le standard du web.
+# Indispensable pour éviter les problèmes d'affichage des accents.
 charset = utf-8
+
+# Style d'indentation : utiliser des espaces est plus cohérent
+# entre les différents éditeurs que les tabulations.
+indent_style = space
+
+# Taille de l'indentation : 4 espaces. C'est un standard très répandu
+# en PHP, HTML et CSS.
+indent_size = 4
+
+# Type de fin de ligne : 'lf' (Line Feed) est le standard sur les systèmes
+# Linux (le 'L' de LAMP) et macOS. Cela évite les conflits avec le 'crlf' de Windows.
+end_of_line = lf
+
+# Supprimer les espaces inutiles en fin de ligne.
+# Aide à garder le code propre.
+trim_trailing_whitespace = true
+
+# Ajouter une ligne vide à la fin du fichier.
+# Une bonne pratique pour la compatibilité avec certains outils et Git.
+insert_final_newline = true
+
+# Règles spécifiques pour les fichiers JavaScript
+# Il est courant d'utiliser 2 espaces en JavaScript.
+[*.js]
+indent_size = 2
+
+# Les fichiers Markdown sont souvent plus lisibles sans la limite
+# de suppression des espaces en fin de ligne (pour les sauts de ligne).
+[*.md]
 trim_trailing_whitespace = false
-insert_final_newline = false

@@ -3,5 +3,8 @@
         "xdebug.php-debug",
         "devsense.phptools-vscode",
         "junstyle.php-cs-fixer",
+        "bmewburn.vscode-intelephense-client",
+        "htmlhint.vscode-htmlhint",
+        "html-validate.vscode-html-validate",
     ]
 }
