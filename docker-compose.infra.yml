@@ -1,0 +1,64 @@
+# docker-compose.infra.yml — Services d'infrastructure partagés
+# Lancer une seule fois sur la VM : docker compose -f docker-compose.infra.yml up -d
+#
+# Services exposés après démarrage :
+#   http://traefik.webbox.vm   → Dashboard Traefik (routes actives)
+#   http://pma.webbox.vm       → phpMyAdmin (serveur : NOM_PROJET-db)
+#   http://192.168.56.50:5380     → Interface admin Technitium DNS (mdp : netlab123)
+
+networks:
+  webbox-net:
+    name: webbox-net
+    driver: bridge
+
+services:
+
+  # --- Reverse proxy : route les requêtes *.webbox.vm vers le bon projet
+  traefik:
+    image: traefik:v3.6
+    container_name: traefik
+    ports:
+      - "80:80"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./traefik/traefik.yml:/etc/traefik/traefik.yml:ro
+    networks:
+      - webbox-net
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.traefik-dashboard.rule=Host(`traefik.webbox.vm`)"
+      - "traefik.http.routers.traefik-dashboard.service=api@internal"
+    restart: unless-stopped
+
+  # --- Serveur DNS : résout *.webbox.vm → 192.168.56.50
+  technitium-dns:
+    image: technitium/dns-server:14.3.0
+    container_name: technitium-dns
+    ports:
+      - "53:53/udp"
+      - "53:53/tcp"
+      - "5380:5380/tcp"
+    volumes:
+      - technitium-data:/etc/dns
+    environment:
+      - DNS_SERVER_ADMIN_PASSWORD=netlab123
+    networks:
+      - webbox-net
+    restart: unless-stopped
+
+  # --- phpMyAdmin multi-serveurs : accès aux BDD de tous les projets
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin
+    environment:
+      PMA_ARBITRARY: "1"   # Permet de saisir l'adresse du serveur MySQL manuellement
+    networks:
+      - webbox-net
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.phpmyadmin.rule=Host(`pma.webbox.vm`)"
+      - "traefik.http.services.phpmyadmin.loadbalancer.server.port=80"
+    restart: unless-stopped
+
+volumes:
+  technitium-data:

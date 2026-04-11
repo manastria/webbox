@@ -1,70 +1,74 @@
+# docker-compose.yml — Template de projet WebBox
+# Ne pas lancer directement depuis ce dossier.
+# Utiliser : scripts/install/06_create_project.sh NOM_PROJET
+# Chaque projet est une copie de ce template dans ~/projets/NOM_PROJET/
+#
+# Prérequis : l'infrastructure doit être démarrée
+#   cd ~/webbox && docker compose -f docker-compose.infra.yml up -d
+#
+# Accès après démarrage du projet :
+#   http://NOM_PROJET.webbox.vm  → application PHP
+#   http://pma.webbox.vm         → phpMyAdmin (serveur : NOM_PROJET-db)
+#   \\192.168.56.50\NOM_PROJET   → partage Samba (lecteur W:)
+#
+# Images pré-construites — pour reconstruire et publier :
+#   bash scripts/build-push-images.sh
+
+networks:
+  webbox-net:
+    external: true  # Réseau créé par docker-compose.infra.yml
+
 services:
+
   web:
-    build: ./php
-    ports:
-      - "80:80"
+    image: manastria/webbox-php:${WEBBOX_VERSION:-latest}
+    container_name: ${PROJECT_NAME}-web
     volumes:
       - ./public:/var/www/html
       - ./php/xdebug.ini:/usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
       - ./php/99-dev.ini:/usr/local/etc/php/conf.d/99-dev.ini
     environment:
-      XDEBUG_CONFIG: "client_host=${XDEBUG_CLIENT_HOST} client_port=9003"
+      XDEBUG_CONFIG: "client_host=${XDEBUG_CLIENT_HOST:-192.168.56.1} client_port=9003"
     depends_on:
       db:
         condition: service_healthy
+    networks:
+      - webbox-net
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.${PROJECT_NAME}.rule=Host(`${PROJECT_NAME}.webbox.vm`)"
+      - "traefik.http.services.${PROJECT_NAME}.loadbalancer.server.port=80"
     restart: unless-stopped
 
   node:
-    build: ./node
+    image: manastria/webbox-node:${WEBBOX_VERSION:-latest}
+    container_name: ${PROJECT_NAME}-node
     working_dir: /app
     volumes:
       - .:/app
     command: tail -f /dev/null
+    networks:
+      - webbox-net
     restart: no
 
   db:
     image: mysql:8.0
-    container_name: lamp_db
+    container_name: ${PROJECT_NAME}-db
     environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      MYSQL_DATABASE: ${MYSQL_DATABASE}
-      MYSQL_USER: ${MYSQL_USER}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-rootpassword}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-demo}
+      MYSQL_USER: ${MYSQL_USER:-user}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-password}
     volumes:
       - db_data:/var/lib/mysql
       - ./db/init:/docker-entrypoint-initdb.d
-    ports:
-      - "3306:3306"
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       interval: 10s
       retries: 5
-    restart: unless-stopped
-
-  phpmyadmin:
-    image: phpmyadmin/phpmyadmin
-    container_name: lamp_phpmyadmin
-    ports:
-      - "8060:80"
-    environment:
-      PMA_HOST: db
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-    depends_on:
-      - db
-    restart: unless-stopped
-
-  technitium-dns:
-    image: technitium/dns-server
-    container_name: dns
-    ports:
-      - "53:53/udp"
-      - "5380:5380/tcp"
-    volumes:
-      - technitium-data:/etc/dns
-    environment:
-      - DNS_SERVER_ADMIN_PASSWORD=netlab123
+    networks:
+      - webbox-net
     restart: unless-stopped
 
 volumes:
   db_data:
-  technitium-data:

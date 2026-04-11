@@ -39,7 +39,7 @@ if ! grep -q "^\[$SHARE_NAME\]" /etc/samba/smb.conf; then
    browsable = yes
    read only = no
    guest ok = no
-   force user = etudiant
+   force user = $USERNAME
 
 
 EOF

@@ -2,13 +2,13 @@
 
 # --- Détection : activer les couleurs uniquement si sortie vers un terminal
 if [[ -t 1 ]]; then
-    COLOR_RESET="\033[0m"
-    COLOR_BOLD="\033[1m"
-    COLOR_GREEN="\033[1;32m"
-    COLOR_BLUE="\033[1;34m"
-    COLOR_YELLOW="\033[1;33m"
-    COLOR_RED="\033[1;31m"
-    COLOR_DIM="\033[2m"
+    COLOR_RESET=$'\033[0m'
+    COLOR_BOLD=$'\033[1m'
+    COLOR_GREEN=$'\033[1;32m'
+    COLOR_BLUE=$'\033[1;34m'
+    COLOR_YELLOW=$'\033[1;33m'
+    COLOR_RED=$'\033[1;31m'
+    COLOR_DIM=$'\033[2m'
 else
     COLOR_RESET=""
     COLOR_BOLD=""
@@ -25,25 +25,25 @@ log() {
 
     case "$type" in
         INFO)
-            echo -e "${COLOR_BOLD}[=]${COLOR_RESET} $message"
+            printf '%s\n' "${COLOR_BOLD}[=]${COLOR_RESET} $message"
             ;;
         OK)
-            echo -e "${COLOR_GREEN}[✔]${COLOR_RESET} $message"
+            printf '%s\n' "${COLOR_GREEN}[✔]${COLOR_RESET} $message"
             ;;
         STEP)
-            echo -e "${COLOR_BLUE}[+]${COLOR_RESET} $message"
+            printf '%s\n' "${COLOR_BLUE}[+]${COLOR_RESET} $message"
             ;;
         WARN)
-            echo -e "${COLOR_YELLOW}[!]${COLOR_RESET} $message"
+            printf '%s\n' "${COLOR_YELLOW}[!]${COLOR_RESET} $message"
             ;;
         ERROR)
-            echo -e "${COLOR_RED}[✘]${COLOR_RESET} $message" >&2
+            printf '%s\n' "${COLOR_RED}[✘]${COLOR_RESET} $message" >&2
             ;;
         DEBUG)
-            echo -e "${COLOR_DIM}[~] $message${COLOR_RESET}"
+            printf '%s\n' "${COLOR_DIM}[~] $message${COLOR_RESET}"
             ;;
         *)
-            echo -e "[?] $message"
+            printf '%s\n' "[?] $message"
             ;;
     esac
 }

@@ -3,17 +3,14 @@
 set -e
 
 # --- Variables
-# Source les variables communes
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$SCRIPT_DIR/../lib/log.sh"
 source "$SCRIPT_DIR/vars.sh"
 
-
-# sudo apt update && sudo apt upgrade -y
-
 # --- 1. Installer l'environnement graphique LXDE minimal
-echo "[+] Installation de LXDE et des utilitaires"
+log STEP "Installation de LXDE et des utilitaires"
 sudo apt update
-sudo apt install --no-install-recommends -y \
+sudo apt install -y \
     lxde-core \
     lightdm lxterminal \
     lightdm-gtk-greeter lightdm-gtk-greeter-settings \
@@ -22,15 +19,17 @@ sudo apt install --no-install-recommends -y \
     firefox-esr \
     pcmanfm \
     mousepad \
+    micro \
     gvfs-backends \
     php-cli \
     samba-client
 
-# --- 1. Créer l'utilisateur s'il n'existe pas
-"$SCRIPT_DIR/add_user.sh"
+# --- 2. Créer l'utilisateur s'il n'existe pas
+"$SCRIPT_DIR/01_add_user.sh"
+"$SCRIPT_DIR/05_ajouter_cle_publique.sh"
 
 # --- 3. Configurer le clavier en AZERTY (FR)
-echo "[+] Configuration du clavier en français (AZERTY)"
+log STEP "Configuration du clavier en français (AZERTY)"
 sudo sed -i 's/^XKBLAYOUT=.*/XKBLAYOUT="fr"/' /etc/default/keyboard
 sudo sed -i 's/^XKBMODEL=.*/XKBMODEL="pc105"/' /etc/default/keyboard
 sudo sed -i '/^XKBVARIANT=/c\XKBVARIANT=""' /etc/default/keyboard
@@ -38,7 +37,7 @@ sudo sed -i '/^XKBOPTIONS=/c\XKBOPTIONS=""' /etc/default/keyboard
 sudo systemctl restart keyboard-setup.service
 
 # --- 4. Créer le raccourci "Mon site" sur le bureau
-echo "[+] Création du raccourci Mon site"
+log STEP "Création du raccourci Mon site"
 sudo -u "$USERNAME" mkdir -p "$USER_HOME/Bureau"
 
 cat <<EOF | sudo tee "$USER_HOME/Bureau/Mon_site.desktop" > /dev/null
@@ -56,13 +55,13 @@ sudo chmod +x "$USER_HOME/Bureau/Mon_site.desktop"
 sudo chown "$USERNAME:$USERNAME" "$USER_HOME/Bureau/Mon_site.desktop"
 
 # --- 5. Ajouter un favori Samba dans l'explorateur PCManFM
-echo "[+] Ajout du favori réseau Samba"
+log STEP "Ajout du favori réseau Samba"
 sudo -u "$USERNAME" mkdir -p "$USER_HOME/.config/gtk-3.0"
 echo "smb://$IP_SITE/$SHARE_NAME Partage Web" | sudo tee "$USER_HOME/.config/gtk-3.0/bookmarks" > /dev/null
 sudo chown -R "$USERNAME:$USERNAME" "$USER_HOME/.config"
 
 # --- 6. Démarrage automatique : conserver l'autostart LXDE et ajouter clavier + Firefox
-echo "[+] Configuration de l'autostart LXDE"
+log STEP "Configuration de l'autostart LXDE"
 AUTOSTART_DIR="$USER_HOME/.config/lxsession/LXDE"
 sudo -u "$USERNAME" mkdir -p "$AUTOSTART_DIR"
 
@@ -84,17 +83,21 @@ grep -qxF "@firefox-esr http://$IP_SITE" "$AUTOSTART_FILE" || \
 # 4) Droits
 sudo chown -R "$USERNAME:$USERNAME" "$USER_HOME/.config"
 
-
 # --- 7. Configurer le hostname
-echo "[+] Configuration du hostname"
-"$SCRIPT_DIR/hostname.sh"
+log STEP "Configuration du hostname"
+"$SCRIPT_DIR/02_hostname.sh"
 
-# --- 7. Configurer le réseau
-echo "[+] Configuration du réseau"
-"$SCRIPT_DIR/config_hostonly_eth0.sh"
+# --- 8. Configurer le réseau
+log STEP "Configuration du réseau host-only"
+"$SCRIPT_DIR/03_config_network.sh"
 
-# --- 8. Installer et configurer Samba
-echo "[+] Installation de Samba"
-"$SCRIPT_DIR/configure-samba.sh"
+# --- 9. Installer et configurer Samba
+log STEP "Installation de Samba"
+"$SCRIPT_DIR/04_configure_samba.sh"
 
-echo "[✔] Installation et configuration terminées pour l'utilisateur $USERNAME"
+# --- 10. Démarrer l'infrastructure Docker et configurer le DNS
+log STEP "Démarrage de l'infrastructure Docker"
+"$SCRIPT_DIR/08_start_infra.sh"
+
+log OK "Installation et configuration terminées pour l'utilisateur $USERNAME"
+log INFO "Créer un projet : sudo $SCRIPT_DIR/06_create_project.sh NOM_PROJET"

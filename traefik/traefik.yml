@@ -1,0 +1,17 @@
+# traefik.yml — Configuration statique de Traefik
+
+api:
+  dashboard: true
+  insecure: true  # Dashboard accessible sans authentification (contexte pédagogique)
+
+entryPoints:
+  web:
+    address: ":80"
+
+providers:
+  docker:
+    exposedByDefault: false  # Seuls les conteneurs avec traefik.enable=true sont routés
+    network: webbox-net      # Réseau Docker partagé entre l'infra et les projets
+
+log:
+  level: WARN
