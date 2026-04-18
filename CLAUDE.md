@@ -214,21 +214,27 @@ Idempotent : si la zone ou l'enregistrement existe deja, continue sans erreur.
 
 ### 4.10 Creation d'un nouveau projet
 
-Fichier: `scripts/install/06_create_project.sh NOM_PROJET`
+Fichier: `scripts/install/06_create_project.sh [--no-template] NOM_PROJET`
 
 Role:
 
 - valide le nom du projet (minuscules, chiffres, tirets)
-- copie le template depuis `$PROJECT_PATH` vers `$PROJECTS_PATH/NOM_PROJET/`
-- genere le fichier `.env` avec `PROJECT_NAME=NOM_PROJET`
+- sans `--no-template` : copie le template depuis `$PROJECT_PATH` vers `$PROJECTS_PATH/NOM_PROJET/` et genere `.env`
+- avec `--no-template` : cree uniquement les dossiers (dont `public/` pour Samba) sans copier le template ni generer `.env`
 - ajoute un partage Samba `[NOM_PROJET]` → `.../NOM_PROJET/public`
-- lance `docker compose up -d --build` dans le dossier du projet
+- sans `--no-template` : lance `docker compose up -d --build`
+- avec `--no-template` : affiche un WARN et les instructions pour lancer Docker manuellement
 
-Sortie attendue:
+Sortie attendue (mode normal):
 
 - `http://NOM_PROJET.webbox.vm` accessible depuis les postes etudiants
 - `\\192.168.56.50\NOM_PROJET` montable en lecteur W:
 - BDD accessible via `http://pma.webbox.vm` (serveur : `NOM_PROJET-db`)
+
+Sortie attendue (mode `--no-template`):
+
+- dossier `$PROJECTS_PATH/NOM_PROJET/public/` cree et partage Samba actif
+- Docker non demarre : l'etudiant fournit son propre `docker-compose.yml` et `.env`
 
 ## 5) Scripts PowerShell cote Windows (etudiants)
 
@@ -293,7 +299,7 @@ Passage de parametre possible : `MountDrives.ps1 -ProjectName tp-formulaires`
 Les guides utilisateurs sont dans le répertoire `docs/` :
 
 - `docs/guide-enseignant.md` — installation VM, creation de projets, maintenance
-- `docs/guide-etudiant.md` — configuration DNS, SSH, lecteur reseau, workflow quotidien
+- `docs/guide-etudiant.md` — configuration DNS, SSH, creation de projet (3 modes : template, git clone, git init), lecteur reseau, workflow quotidien
 - `docs/images-docker.md` — build et publication des images Docker Hub (usage enseignant)
 
 ## 8) Zones a optimiser (pour la suite)
@@ -308,6 +314,7 @@ Axes deja traites:
 - secrets en clair conserves intentionnellement (contexte pedagogique)
 - documentation utilisateur centralisee dans `docs/`
 - images Docker PHP et Node pre-construites et publiees sur Docker Hub (plus de build sur la VM)
+- option `--no-template` dans `06_create_project.sh` : creation workspace vierge pour git clone ou git init
 
 Axes encore a traiter:
 

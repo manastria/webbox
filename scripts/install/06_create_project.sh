@@ -7,12 +7,32 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/../lib/log.sh"
 source "$SCRIPT_DIR/vars.sh"
 
-# --- Argument
-PROJECT_NAME="$1"
+# --- Arguments
+NO_TEMPLATE=false
+PROJECT_NAME=""
+
+for arg in "$@"; do
+    case "$arg" in
+        --no-template)
+            NO_TEMPLATE=true
+            ;;
+        -*)
+            log ERROR "Option inconnue : '$arg'"
+            log ERROR "Usage: $0 [--no-template] NOM_PROJET"
+            exit 1
+            ;;
+        *)
+            if [ -z "$PROJECT_NAME" ]; then
+                PROJECT_NAME="$arg"
+            fi
+            ;;
+    esac
+done
 
 if [ -z "$PROJECT_NAME" ]; then
-    log ERROR "Usage: $0 NOM_PROJET"
+    log ERROR "Usage: $0 [--no-template] NOM_PROJET"
     log ERROR "Exemple: $0 tp-formulaires"
+    log ERROR "Exemple: $0 --no-template tp-scratch"
     log ERROR "Noms acceptés : lettres minuscules, chiffres, tirets"
     exit 1
 fi
@@ -34,24 +54,35 @@ fi
 log INFO "Création du projet '$PROJECT_NAME'"
 log INFO "  URL    : http://$PROJECT_NAME.$VM_HOSTNAME.$DOMAIN"
 log INFO "  Dossier: $DEST"
+if [ "$NO_TEMPLATE" = true ]; then
+    log INFO "  Mode   : sans template (workspace vierge)"
+fi
 
 # --- 1. Créer les dossiers
 log STEP "Création des dossiers..."
 sudo -u "$USERNAME" mkdir -p "$PROJECTS_PATH"
 sudo -u "$USERNAME" mkdir -p "$DEST"
+if [ "$NO_TEMPLATE" = true ]; then
+    sudo -u "$USERNAME" mkdir -p "$DEST/public"
+fi
 
 # --- 2. Copier les fichiers du template (webbox)
-log STEP "Copie du template depuis $PROJECT_PATH..."
-for item in php public db docker-compose.yml gulpfile.js package.json \
-            .editorconfig .htmlvalidate.json .vscode; do
-    if [ -e "$PROJECT_PATH/$item" ]; then
-        sudo -u "$USERNAME" cp -r "$PROJECT_PATH/$item" "$DEST/"
-    fi
-done
+if [ "$NO_TEMPLATE" = false ]; then
+    log STEP "Copie du template depuis $PROJECT_PATH..."
+    for item in php public db docker-compose.yml gulpfile.js package.json \
+                .editorconfig .htmlvalidate.json .vscode; do
+        if [ -e "$PROJECT_PATH/$item" ]; then
+            sudo -u "$USERNAME" cp -r "$PROJECT_PATH/$item" "$DEST/"
+        fi
+    done
+else
+    log INFO "Mode sans template : aucun fichier copié depuis $PROJECT_PATH"
+fi
 
 # --- 3. Générer le fichier .env du projet
-log STEP "Génération du fichier .env..."
-cat <<EOF | sudo -u "$USERNAME" tee "$DEST/.env" > /dev/null
+if [ "$NO_TEMPLATE" = false ]; then
+    log STEP "Génération du fichier .env..."
+    cat <<EOF | sudo -u "$USERNAME" tee "$DEST/.env" > /dev/null
 # Projet : $PROJECT_NAME
 PROJECT_NAME=$PROJECT_NAME
 
@@ -67,6 +98,7 @@ MYSQL_DATABASE=demo
 MYSQL_USER=user
 MYSQL_PASSWORD=password
 EOF
+fi
 
 # --- 4. Créer un .gitignore minimal dans le projet
 if [ ! -f "$DEST/.gitignore" ]; then
@@ -95,8 +127,14 @@ else
 fi
 
 # --- 6. Démarrer les conteneurs Docker du projet
-log STEP "Démarrage des conteneurs Docker (build initial, peut prendre quelques minutes)..."
-sudo -u "$USERNAME" bash -c "cd '$DEST' && docker compose up -d --build"
+if [ "$NO_TEMPLATE" = false ]; then
+    log STEP "Démarrage des conteneurs Docker (build initial, peut prendre quelques minutes)..."
+    sudo -u "$USERNAME" bash -c "cd '$DEST' && docker compose up -d --build"
+else
+    log WARN "Mode sans template : docker compose non lancé (pas de docker-compose.yml)"
+    log INFO "  Créez '$DEST/docker-compose.yml' puis lancez :"
+    log INFO "  cd $DEST && docker compose up -d --build"
+fi
 
 # --- Résumé
 log OK "Projet '$PROJECT_NAME' prêt !"
@@ -107,3 +145,6 @@ log INFO "    URL     : http://pma.$VM_HOSTNAME.$DOMAIN"
 log INFO "    Serveur : ${PROJECT_NAME}-db"
 log INFO "  Partage réseau Windows : \\\\$IP_SITE\\$PROJECT_NAME"
 log INFO "  Dossier sur la VM      : $DEST/public"
+if [ "$NO_TEMPLATE" = true ]; then
+    log INFO "  (mode sans template — fichiers à créer manuellement)"
+fi
