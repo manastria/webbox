@@ -302,7 +302,45 @@ Les guides utilisateurs sont dans le répertoire `docs/` :
 - `docs/guide-etudiant.md` — configuration DNS, SSH, creation de projet (3 modes : template, git clone, git init), lecteur reseau, workflow quotidien
 - `docs/images-docker.md` — build et publication des images Docker Hub (usage enseignant)
 
-## 8) Zones a optimiser (pour la suite)
+## 8) Principes de redaction de la documentation
+
+Deux publics distincts, deux postures d'ecriture.
+
+### 8.1 Documentation enseignant
+
+Public : enseignant qui doit comprendre l'architecture pour concevoir des activites et les proposer aux etudiants.
+
+Posture : **pedagogique et technique**. Expliquer les choix d'architecture, pas seulement les commandes.
+
+Regles :
+
+- Justifier chaque choix technique par son utilite pedagogique ou operationnelle.
+  - Exemple : "Traefik permet d'heberger plusieurs projets dans la meme VM sans changer de port — chaque projet est accessible par son sous-domaine."
+  - Exemple : "L'interface host-only avec IP fixe `192.168.56.50` supprime toute friction en debut d'annee : tous les etudiants ont la meme adresse, la documentation n'a pas besoin d'etre personnalisee."
+- Documenter les decisions non evidentes (pourquoi Technitium plutot que dnsmasq, pourquoi `PMA_ARBITRARY=1`, etc.).
+- Inclure les commandes de verification et de diagnostic.
+- Le lecteur doit pouvoir modifier, etendre ou deboguer l'environnement sans aide exterieure.
+
+### 8.2 Documentation etudiant
+
+Public : etudiant qui doit accomplir une tache précise dans un environnement qu'il n'a pas installé.
+
+Posture : **operationnelle avec explication du pourquoi**. Dire ce qu'il faut faire ET expliquer la technologie sous-jacente qui justifie cette action.
+
+Regles :
+
+- Ne pas supposer que l'etudiant connait la technologie ; introduire brievement le concept quand il conditionne une action.
+  - Exemple : "Pour que ton site soit accessible, tu dois ajouter le label `traefik.enable=true` dans ton `docker-compose.yml`. Traefik est un reverse proxy : il recoit toutes les requetes HTTP et les redirige vers le bon conteneur en lisant le nom de domaine. Sans ce label, Traefik ignore ton conteneur."
+- Privilegier les etapes numerotees et les blocs de code copiables.
+- Eviter les explications d'architecture globale (Traefik, Technitium, VirtualBox) — se limiter a ce que l'etudiant doit savoir pour realiser l'action.
+- Les messages d'erreur courants doivent apparaitre avec leur cause et la correction.
+
+### 8.3 Frontiere entre les deux guides
+
+Si une information repond a "pourquoi la webbox est construite ainsi" → guide enseignant.
+Si une information repond a "comment je fais X dans la webbox" avec explication suffisante pour comprendre → guide etudiant.
+
+## 9) Zones a optimiser (pour la suite)
 
 Axes deja traites:
 
