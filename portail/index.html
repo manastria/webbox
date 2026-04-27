@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>WebBox — Portail</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      max-width: 680px;
+      margin: 3rem auto;
+      padding: 0 1.5rem;
+      color: #333;
+      background: #f0f4f8;
+    }
+    h1 { color: #1a73e8; margin-bottom: 0.2rem; font-size: 2rem; }
+    .subtitle { color: #666; margin-bottom: 2rem; }
+    .card {
+      background: white;
+      border-radius: 8px;
+      padding: 1.25rem 1.5rem;
+      margin-bottom: 1rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    }
+    .card h2 {
+      margin: 0 0 0.8rem;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: #888;
+    }
+    a { color: #1a73e8; text-decoration: none; font-weight: 500; }
+    a:hover { text-decoration: underline; }
+    .service {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.5rem 0;
+      border-bottom: 1px solid #f0f0f0;
+    }
+    .service:last-child { border-bottom: none; }
+    .service .desc { color: #666; font-size: 0.875rem; }
+    code {
+      background: #eef2ff;
+      color: #1a3a8f;
+      padding: 0.2em 0.5em;
+      border-radius: 4px;
+      font-size: 0.9em;
+      font-family: monospace;
+    }
+    .hint {
+      background: #fff8e1;
+      border-left: 3px solid #f9a825;
+      padding: 0.7rem 1rem;
+      border-radius: 0 4px 4px 0;
+      margin-top: 0.75rem;
+      font-size: 0.875rem;
+      color: #555;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>WebBox</h1>
+  <p class="subtitle">Environnement de développement LAMP &mdash; <strong>192.168.56.50</strong></p>
+
+  <div class="card">
+    <h2>Services d'infrastructure</h2>
+    <div class="service">
+      <a href="http://traefik.webbox.vm">traefik.webbox.vm</a>
+      <span class="desc">Dashboard Traefik — routes actives</span>
+    </div>
+    <div class="service">
+      <a href="http://pma.webbox.vm">pma.webbox.vm</a>
+      <span class="desc">phpMyAdmin — toutes les bases de données</span>
+    </div>
+    <div class="service">
+      <a href="http://192.168.56.50:5380">192.168.56.50:5380</a>
+      <span class="desc">Technitium DNS — administration DNS</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Mes projets</h2>
+    <p>Chaque projet est accessible via son sous-domaine :</p>
+    <p><code>http://NOM_PROJET.webbox.vm</code></p>
+    <div class="hint">
+      Tu vois cette page alors que tu cherches ton projet ?
+      Vérifie que le DNS de ton poste Windows est bien configuré sur <strong>192.168.56.50</strong>
+      (lancer <code>dns-config.ps1</code>).
+    </div>
+  </div>
+
+</body>
+</html>
