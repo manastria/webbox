@@ -1,10 +1,11 @@
-# docker-compose.infra.yml — Services d'infrastructure partagés
-# Lancer une seule fois sur la VM : docker compose -f docker-compose.infra.yml up -d
+# infra/docker-compose.yml — Services d'infrastructure partagés
+# Lancer depuis ce répertoire : docker compose up -d
 #
 # Services exposés après démarrage :
 #   http://traefik.webbox.vm   → Dashboard Traefik (routes actives)
 #   http://pma.webbox.vm       → phpMyAdmin (serveur : NOM_PROJET-db)
-#   http://192.168.56.50:5380     → Interface admin Technitium DNS (mdp : netlab123)
+#   http://192.168.56.50       → Portail WebBox
+#   http://192.168.56.50:5380  → Interface admin Technitium DNS (mdp : netlab123)
 
 networks:
   webbox-net:

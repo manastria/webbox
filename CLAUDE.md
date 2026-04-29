@@ -40,7 +40,7 @@ VM (192.168.56.50)
 
 ### Deux couches Docker
 
-**Infrastructure** (`docker-compose.infra.yml`) — lancee une fois, toujours active :
+**Infrastructure** (`infra/docker-compose.yml`) — lancee une fois, toujours active :
 
 | Service        | URL                          | Role                   |
 | -------------- | ---------------------------- | ---------------------- |
@@ -196,7 +196,7 @@ Fichier: `scripts/install/08_start_infra.sh`
 Role:
 
 - verifie que Docker est disponible
-- lance `docker compose -f docker-compose.infra.yml up -d`
+- se place dans `$PROJECT_PATH/infra` et lance `docker compose up -d`
 - appelle `07_configure_dns.sh`
 
 ### 4.9 Configuration DNS Technitium
@@ -284,6 +284,7 @@ Passage de parametre possible : `MountDrives.ps1 -ProjectName tp-formulaires`
 2. verifier `http://traefik.webbox.vm` (dashboard Traefik)
 3. verifier `http://192.168.56.50:5380` (Technitium DNS, zone webbox.vm)
 4. creer un premier projet : `sudo scripts/install/06_create_project.sh tp-demo`
+   (l'infrastructure doit etre active : `cd ~/webbox/infra && docker compose up -d`)
 5. (option) executer `05_ajouter_cle_publique.sh` si SSH sans mot de passe requis
 
 ### Cote etudiant (Windows)

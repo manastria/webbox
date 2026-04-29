@@ -4,7 +4,7 @@ Ce guide explique comment configurer ton poste Windows et accéder à ton enviro
 
 ## Ce dont tu as besoin
 
-- Ton poste Windows connecté au réseau de la salle
+- Ton poste Windows connecté au réseau du labo
 - VS Code installé avec l'extension **Remote - SSH**
 - Le nom du projet fourni par ton enseignant (ex : `tp-formulaires`)
 

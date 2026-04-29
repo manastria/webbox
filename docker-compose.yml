@@ -4,7 +4,7 @@
 # Chaque projet est une copie de ce template dans ~/projets/NOM_PROJET/
 #
 # Prérequis : l'infrastructure doit être démarrée
-#   cd ~/webbox && docker compose -f docker-compose.infra.yml up -d
+#   cd ~/webbox/infra && docker compose up -d
 #
 # Accès après démarrage du projet :
 #   http://NOM_PROJET.webbox.vm  → application PHP

@@ -7,7 +7,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/../lib/log.sh"
 source "$SCRIPT_DIR/vars.sh"
 
-INFRA_COMPOSE="$PROJECT_PATH/docker-compose.infra.yml"
+INFRA_DIR="$PROJECT_PATH/infra"
 
 # --- 1. Vérifier que Docker est disponible
 if ! command -v docker &> /dev/null; then
@@ -17,7 +17,7 @@ fi
 
 # --- 2. Démarrer l'infrastructure
 log STEP "Démarrage de l'infrastructure Docker (Traefik + Technitium DNS + phpMyAdmin)"
-sudo -u "$USERNAME" docker compose -f "$INFRA_COMPOSE" up -d
+(cd "$INFRA_DIR" && sudo -u "$USERNAME" docker compose up -d)
 
 log OK "Conteneurs d'infrastructure démarrés"
 log INFO "  Traefik dashboard : http://traefik.$VM_HOSTNAME.$DOMAIN"
